@@ -16,7 +16,7 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: 'build/out/*.*', fingerprint: true
+            archiveArtifacts artifacts: 'SwarmApi/out/*.*', fingerprint: true
         }
     }
 }
