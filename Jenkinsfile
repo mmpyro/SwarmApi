@@ -6,14 +6,14 @@ pipeline {
 
             steps {
                 sh 'dotnet build -c Release ./SwarmAgent.sln'
-                sh 'dotnet test ./WebApiSpec/WebApiSpec.csproj --logger "trx;LogFileName=WebApiSpec.trx" --results-directory ./testReports'
+                sh 'dotnet test ./WebApiSpec/WebApiSpec.csproj --logger "nunit;LogFileName=WebApiSpec.xml" --results-directory ./testReports'
                 sh 'dotnet publish -c Release ./SwarmApi/SwarmApi.csproj -o ./out'
             }
 
             post {
                 always {
                     archiveArtifacts artifacts: 'SwarmApi/out/*.*', fingerprint: true
-                    mstest testResultsFile:"**/*.trx", keepLongStdio: true
+                    junit 'WebApiSpec/testReports/*.xml'
                 }
             }
         }
