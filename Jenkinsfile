@@ -4,7 +4,9 @@ pipeline {
         stage('Build') {
             agent { label 'dotnetslave' } 
             steps {
-                echo 'Build SwarmApi'
+                sh 'dotnet build -c Release ./SwarmAgent.sln'
+                sh 'dotnet test ./WebApiSpec/WebApiSpec.csproj --logger "trx;LogFileName=WebApiSpec.trx" --results-directory /src/testReports'
+                sh 'dotnet publish -c Release ./SwarmApi/SwarmApi.csproj -o /out'
             }
         }
     }
