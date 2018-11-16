@@ -2,7 +2,7 @@ pipeline {
     agent none 
     stages {
         stage('Build') {
-            agent { docker 'dotnetslave' } 
+            agent { label 'dotnetslave' } 
             steps {
                 echo 'Build SwarmApi'
             }
