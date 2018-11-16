@@ -14,7 +14,7 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: './out/*', fingerprint: true
+            archiveArtifacts artifacts: 'build/out', fingerprint: true
         }
     }
 }
