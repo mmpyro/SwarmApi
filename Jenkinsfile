@@ -1,18 +1,21 @@
 pipeline {
-    agent { label 'dotnetslave' } 
+    agent none
     stages {
         stage('Build') {
+            agent { label 'dotnetslave' } 
+
             steps {
                 sh 'dotnet build -c Release ./SwarmAgent.sln'
                 sh 'dotnet test ./WebApiSpec/WebApiSpec.csproj --logger "trx;LogFileName=WebApiSpec.trx" --results-directory ./testReports'
                 sh 'dotnet publish -c Release ./SwarmApi/SwarmApi.csproj -o ./out'
             }
-        }
-    }
 
-    post {
-        always {
-            archiveArtifacts artifacts: 'SwarmApi/out/*.*', fingerprint: true
+            post {
+                always {
+                    archiveArtifacts artifacts: 'SwarmApi/out/*.*', fingerprint: true
+                    mstest testResultsFile:"**/*.trx", keepLongStdio: true
+                }
+            }
         }
     }
 }
