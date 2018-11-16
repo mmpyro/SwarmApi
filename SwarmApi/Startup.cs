@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using SwarmApi.Clients;
 using SwarmApi.Dtos;
 using SwarmApi.Services;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace SwarmApi
 {
@@ -35,6 +36,23 @@ namespace SwarmApi
                     .AddConsole()
                     .AddDebug();
             });
+
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info
+                {
+                    Version = "v1",
+                    Title = "Swarm API",
+                    Description = "REST API for docker swarm",
+                    TermsOfService = "None",
+                    Contact = new Contact
+                    {
+                        Name = "Michal Marszalek",
+                        Email = "mmpyro@gmail.com"
+                    }
+                });
+            }); 
             services.Configure<SwarmConfiguration>(Configuration.GetSection("SwarmConfiguration"));
             services.AddTransient<ISwarmClient, SwarmClient>();
             services.AddTransient<INodeService, NodeService>();
@@ -50,6 +68,14 @@ namespace SwarmApi
             }
 
             app.UseMvc();
+            app.UseStaticFiles();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "SWARM API");
+                c.RoutePrefix = string.Empty;
+            });
 
             app.UseExceptionHandler(
                 options => {
@@ -69,7 +95,7 @@ namespace SwarmApi
                             await context.Response.WriteAsync("Internal server error.").ConfigureAwait(false);
                         }
                     });
-                });
+            });
         }
     }
 }

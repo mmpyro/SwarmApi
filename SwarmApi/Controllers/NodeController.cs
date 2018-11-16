@@ -18,6 +18,7 @@ namespace SwarmApi.Controllers
             this.nodeService = nodeService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> GetNode()
         {
             return await nodeService.GetNodeAsync();
