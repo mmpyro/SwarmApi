@@ -13,7 +13,7 @@ pipeline {
             post {
                 always {
                     archiveArtifacts artifacts: 'SwarmApi/out/*.*', fingerprint: true
-                    junit 'WebApiSpec/testReports/*.xml'
+                    nunit testResultsPattern: 'WebApiSpec.xml'
                 }
             }
         }
