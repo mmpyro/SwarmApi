@@ -4,6 +4,8 @@ pipeline {
         stage('Build') {
             agent { label 'dotnetslave' } 
             steps {
+                sh 'pwd'
+                sh 'ls'
                 sh 'dotnet build -c Release ./SwarmAgent.sln'
                 sh 'dotnet test ./WebApiSpec/WebApiSpec.csproj --logger "trx;LogFileName=WebApiSpec.trx" --results-directory ./testReports'
                 sh 'dotnet publish -c Release ./SwarmApi/SwarmApi.csproj -o ./out'
@@ -14,7 +16,7 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: './out/*.*', fingerprint: true
+            archiveArtifacts artifacts: 'build/out/*.*', fingerprint: true
         }
     }
 }
