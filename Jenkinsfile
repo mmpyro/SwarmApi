@@ -7,8 +7,14 @@ pipeline {
                 sh 'dotnet build -c Release ./SwarmAgent.sln'
                 sh 'dotnet test ./WebApiSpec/WebApiSpec.csproj --logger "trx;LogFileName=WebApiSpec.trx" --results-directory ./testReports'
                 sh 'dotnet publish -c Release ./SwarmApi/SwarmApi.csproj -o ./out'
-                sh 'cat ./WebApiSpec/testReports/*.trx'
+                mstest testResultsFile:"**/*.trx", keepLongStdio: true
             }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: './out/*', fingerprint: true
         }
     }
 }
