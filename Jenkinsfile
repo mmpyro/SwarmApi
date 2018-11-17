@@ -8,7 +8,7 @@ pipeline {
         stage('Build') {
             agent { label 'dotnetslave' } 
             steps {
-                sh 'dotnet sonarscanner begin /k:"${param.ProjectKey}" /d:sonar.login="${param.SonarLogin}" /d:sonar.host.url="http://sonarqube:9000"'
+                sh 'dotnet sonarscanner begin /k:"${params.ProjectKey}" /d:sonar.login="${params.SonarLogin}" /d:sonar.host.url="http://sonarqube:9000"'
                 sh 'dotnet build -c Release ./SwarmAgent.sln'
                 sh 'dotnet sonarscanner end'
                 sh 'dotnet test ./WebApiSpec/WebApiSpec.csproj --logger "nunit;LogFileName=WebApiSpec.xml" --results-directory ./testReports'
