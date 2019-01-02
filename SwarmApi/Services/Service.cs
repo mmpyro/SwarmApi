@@ -30,5 +30,27 @@ namespace SwarmApi.Services
             result.StatusCode = 404;
             return result;
         }
+
+        protected IActionResult BadRequest(string message)
+        {
+            var result = new ContentResult();
+            result.StatusCode = 400;
+            result.Content = message;
+            return result;
+        }
+
+        protected IActionResult NoContent()
+        {
+            var result = new ContentResult();
+            result.StatusCode = 204;
+            return result;
+        }
+
+        protected IActionResult Ok()
+        {
+            var result = new ContentResult();
+            result.StatusCode = 200;
+            return result;
+        }
     }
 }

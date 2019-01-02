@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using SwarmApi.Clients;
 using SwarmApi.Dtos;
 using SwarmApi.Services;
+using SwarmApi.Validators;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace SwarmApi
@@ -59,6 +60,7 @@ namespace SwarmApi
             services.AddTransient<INodeService, NodeService>();
             services.AddTransient<ISwarmService, SwarmService>();
             services.AddTransient<ISecretService, SecretService>();
+            services.AddTransient<IValidator<SecretDto>, SecretValidator>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
