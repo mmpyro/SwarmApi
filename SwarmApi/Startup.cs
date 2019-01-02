@@ -52,10 +52,13 @@ namespace SwarmApi
                         Email = "mmpyro@gmail.com"
                     }
                 });
+                c.DescribeAllEnumsAsStrings();
             }); 
             services.Configure<SwarmConfiguration>(Configuration.GetSection("SwarmConfiguration"));
             services.AddTransient<ISwarmClient, SwarmClient>();
             services.AddTransient<INodeService, NodeService>();
+            services.AddTransient<ISwarmService, SwarmService>();
+            services.AddTransient<ISecretService, SecretService>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

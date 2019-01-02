@@ -10,6 +10,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Docker.DotNet.Models;
+using SwarmApi.Filters;
+using SwarmApi.Enums;
 
 namespace WebApiSpec
 {
@@ -36,7 +38,7 @@ namespace WebApiSpec
             var nodeService = new NodeService(_swarmClient, _loggerFactory);
 
             //When
-            var response = await nodeService.GetNodeAsync();
+            var response = await nodeService.GetNodeAsync(new NodeFilterParameters());
             var jsonResult = response as JsonResult;
             var value = jsonResult?.Value as IEnumerable<NodeListResponse>;
 
@@ -45,6 +47,33 @@ namespace WebApiSpec
             Assert.NotNull(value);
             Assert.Equal(200, jsonResult.StatusCode);
             Assert.Equal(2, value.Count());
+        }
+
+        [Fact]
+        public async Task ShouldReturnAllManagerNodesInfoWhenGetNodesCalled()
+        {
+            //Given
+            var spec = new NodeUpdateParameters();
+            spec.Role = "manager";
+            _swarmClient.GetNodes().Returns(x => {
+                return Task.FromResult<IEnumerable<NodeListResponse>>(new []{_any.Create<NodeListResponse>(),
+                _any.Build<NodeListResponse>().With(t => t.Spec, spec).Create() });
+                
+            });
+            var nodeService = new NodeService(_swarmClient, _loggerFactory);
+
+            //When
+            var response = await nodeService.GetNodeAsync(new NodeFilterParameters{
+                Role = SwarmRole.Manager
+            });
+            var jsonResult = response as JsonResult;
+            var value = jsonResult?.Value as IEnumerable<NodeListResponse>;
+
+            //Then
+            Assert.NotNull(jsonResult);
+            Assert.NotNull(value);
+            Assert.Equal(200, jsonResult.StatusCode);
+            Assert.Equal(1, value.Count());
         }
 
         [Fact]
@@ -57,7 +86,7 @@ namespace WebApiSpec
             var nodeService = new NodeService(_swarmClient, _loggerFactory);
 
             //When
-            var response = await nodeService.GetNodeAsync();
+            var response = await nodeService.GetNodeAsync(new NodeFilterParameters());
             var result = response as ContentResult;
 
             //Then

@@ -5,6 +5,7 @@ using SwarmApi.Clients;
 using System.Linq;
 using System.Threading.Tasks;
 using SwarmApi.Services;
+using SwarmApi.Enums;
 
 namespace SwarmApi.Controllers
 {
@@ -19,9 +20,12 @@ namespace SwarmApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetNode()
+        public async Task<IActionResult> GetNode([FromQuery] string hostname, [FromQuery] SwarmRole role)
         {
-            return await nodeService.GetNodeAsync();
+            return await nodeService.GetNodeAsync(new Filters.NodeFilterParameters{
+                Hostname = hostname,
+                Role = role
+            });
         }
     }
 }

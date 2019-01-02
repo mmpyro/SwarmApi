@@ -5,12 +5,15 @@ using Microsoft.Extensions.Logging;
 using SwarmApi.Clients;
 using System.Linq;
 using static SwarmApi.Constants;
+using SwarmApi.Filters;
+using SwarmApi.Extensions;
+using SwarmApi.Enums;
 
 namespace SwarmApi.Services
 {
     public interface INodeService
     {
-        Task<IActionResult> GetNodeAsync();
+        Task<IActionResult> GetNodeAsync(NodeFilterParameters filterParameters);
     }
 
     public class NodeService : Service, INodeService
@@ -24,11 +27,19 @@ namespace SwarmApi.Services
             _logger = loggerFactory.CreateLogger(ConsoleLogCategory);
         }
 
-        public async Task<IActionResult> GetNodeAsync()
+        public async Task<IActionResult> GetNodeAsync(NodeFilterParameters filterParameters)
         {
             try
             {
                 var nodes = await _swarmClient.GetNodes();
+                if(filterParameters.Hostname.IsNotNullOrEmpty())
+                {
+                    nodes = nodes.Where(t => t.Description.Hostname == filterParameters.Hostname);
+                }
+                if(filterParameters.Role != SwarmRole.Unknown)
+                {
+                    nodes = nodes.Where(t =>  t.Spec.Role.Equals(filterParameters.Role.ToString(), StringComparison.OrdinalIgnoreCase));
+                }
                 _logger.LogInformation("Fetch swarm nodes.");
                 return Json(nodes.ToArray());
             }
