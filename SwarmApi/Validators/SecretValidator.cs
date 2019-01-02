@@ -6,14 +6,14 @@ namespace SwarmApi.Validators
 {
     public class SecretValidator : IValidator<SecretDto>
     {
-        public void Validate(SecretDto secretDto)
+        public void Validate(SecretDto value)
         {
-            if(secretDto.Content.IsNullOrEmpty())
+            if(value.Content.IsNullOrEmpty())
             {
                 throw new ArgumentException("Content field cannot be empty.");
             }
 
-            if(secretDto.Name.IsNullOrEmpty())
+            if(value.Name.IsNullOrEmpty())
             {
                 throw new ArgumentException("Name field cannot be empty.");
             }

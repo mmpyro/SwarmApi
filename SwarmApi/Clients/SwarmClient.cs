@@ -13,6 +13,7 @@ namespace SwarmApi.Clients
     {
         Task<IEnumerable<NodeListResponse>> GetNodes();
         Task<IEnumerable<SwarmService>> GetServices();
+        Task DeleteService(string id);
         Task<IEnumerable<Secret>> GetSecrets();
         Task<SecretCreateResponse> CreateSecret(SecretSpec body);
         Task DeleteSecret(string id);
@@ -45,6 +46,11 @@ namespace SwarmApi.Clients
         public async Task<IEnumerable<SwarmService>> GetServices()
         {
             return await _client.Swarm.ListServicesAsync();
+        }
+
+        public async Task DeleteService(string id)
+        {
+            await _client.Swarm.RemoveServiceAsync(id);
         }
 
         public async Task<IEnumerable<Secret>> GetSecrets()

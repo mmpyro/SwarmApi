@@ -12,6 +12,8 @@ using SwarmApi.Dtos;
 using System.Text;
 using SwarmApi.Validators;
 using Docker.DotNet.Models;
+using Docker.DotNet;
+using System.Net;
 
 namespace SwarmApi.Services
 {
@@ -94,23 +96,33 @@ namespace SwarmApi.Services
         {
             try
             {
-                if(id.IsNullOrEmpty())
-                {
-                    throw new ArgumentException();
-                }
+                ValidateId(id);
                 await _swarmClient.DeleteSecret(id);
                 return NoContent();
             }
-            catch(ArgumentException ex)
+            catch (ArgumentException ex)
             {
                 _logger.LogError(ex, "Cannot delete secret with empty id.");
                 return BadRequest(ex.Message);
+            }
+            catch(DockerApiException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                _logger.LogInformation($"Service with id: {id} not found.");
+                return NotFound();
             }
             catch(Exception ex)
             {
                 var errorMessage = $"Cannot delete {id} secret.";
                 _logger.LogError(ex, errorMessage);
                 return InternalServerError(errorMessage);
+            }
+        }
+
+        private static void ValidateId(string id)
+        {
+            if (id.IsNullOrEmpty())
+            {
+                throw new ArgumentException("id cannot be null.");
             }
         }
 

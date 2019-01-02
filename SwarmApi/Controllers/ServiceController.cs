@@ -21,5 +21,12 @@ namespace SwarmApi.Controllers
         {
             return await _swarmService.GetServicesAsync();
         }
+
+        [Route("id/{id}")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteService(string id)
+        {
+            return await _swarmService.DeleteServicesAsync(id);
+        }
     }
 }
