@@ -14,6 +14,7 @@ namespace SwarmApi.Clients
         Task<IEnumerable<NodeListResponse>> GetNodes();
         Task<IEnumerable<SwarmService>> GetServices();
         Task<IEnumerable<Secret>> GetSecrets();
+        Task<SecretCreateResponse> CreateSecret(SecretSpec body);
     }
 
     public class SwarmClient : ISwarmClient
@@ -48,6 +49,11 @@ namespace SwarmApi.Clients
         public async Task<IEnumerable<Secret>> GetSecrets()
         {
             return await _client.Secrets.ListAsync();
+        }
+
+        public async Task<SecretCreateResponse> CreateSecret(SecretSpec body)
+        {
+            return await _client.Secrets.CreateAsync(body);
         }
     }
 }

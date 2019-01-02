@@ -18,5 +18,17 @@ namespace SwarmApi.Services
             result.StatusCode = statusCode;
             return result;
         }
+
+        protected IActionResult Created(string location, object value)
+        {
+            return new CreatedResult(location, value);
+        }
+
+        protected IActionResult NotFound()
+        {
+            var result = new ContentResult();
+            result.StatusCode = 404;
+            return result;
+        }
     }
 }
