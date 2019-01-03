@@ -4,6 +4,7 @@ pipeline {
         string(name: 'PROJECT_KEY', defaultValue: 'SwarmApi', description: 'ProjectKey for sonarqube.')
     }
     stages {
+
         stage('Build') {
             agent { label 'dotnetslave' }
             environment { 
@@ -18,12 +19,24 @@ pipeline {
                     nunit testResultsPattern: 'WebApiSpec/testReports/*.xml'
                     sh 'dotnet publish -c Release ./SwarmApi/SwarmApi.csproj -o ./out'
                 }
-            }
-
-            post {
-                always {
-                    archiveArtifacts artifacts: 'SwarmApi/out/*.*', fingerprint: true
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
                 }
+            }
+        }
+
+        stage("SonarQube Quality Gate") { 
+            timeout(time: 1, unit: 'HOURS') { 
+                def qg = waitForQualityGate() 
+                if (qg.status != 'OK') {
+                    error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                }
+            }
+        }
+
+        post {
+            always {
+                    archiveArtifacts artifacts: 'SwarmApi/out/*.*', fingerprint: true
             }
         }
     }
