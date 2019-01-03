@@ -12,7 +12,6 @@ pipeline {
             steps {
                 withSonarQubeEnv('sonarqube') {
                     sh 'dotnet test ./WebApiSpec/WebApiSpec.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --logger "nunit;LogFileName=WebApiSpec.xml" --results-directory ./testReports'
-                    sh 'dotnet build-server shutdown'
                     sh "dotnet sonarscanner begin /k:\"${params.PROJECT_KEY}\" /d:sonar.host.url=\"http://sonarqube:9000\" /d:sonar.login=\"${SONAR_LOGIN}\" /d:sonar.cs.opencover.reportsPaths=\"WebApiSpec/coverage.opencover.xml\" /d:sonar.coverage.exclusions=\"**Spec*.cs\""
                     sh 'dotnet build -c Release ./SwarmAgent.sln'
                     sh "dotnet sonarscanner end /d:sonar.login=\"${SONAR_LOGIN}\""
