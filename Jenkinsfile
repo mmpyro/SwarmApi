@@ -18,9 +18,6 @@ pipeline {
                     nunit testResultsPattern: 'WebApiSpec/testReports/*.xml'
                     sh 'dotnet publish -c Release ./SwarmApi/SwarmApi.csproj -o ./out'
                 }
-                timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
             }
 
             post {
