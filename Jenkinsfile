@@ -4,7 +4,6 @@ pipeline {
         string(name: 'PROJECT_KEY', defaultValue: 'SwarmApi', description: 'ProjectKey for sonarqube.')
     }
     stages {
-
         stage('Build') {
             agent { label 'dotnetslave' }
             environment { 
@@ -24,7 +23,6 @@ pipeline {
                 }
             }
         }
-
         stage("SonarQube Quality Gate") { 
             timeout(time: 1, unit: 'HOURS') { 
                 def qg = waitForQualityGate() 
@@ -33,11 +31,11 @@ pipeline {
                 }
             }
         }
+    }
 
-        post {
-            always {
-                    archiveArtifacts artifacts: 'SwarmApi/out/*.*', fingerprint: true
-            }
+    post {
+        always {
+            archiveArtifacts artifacts: 'SwarmApi/out/*.*', fingerprint: true
         }
     }
 }
