@@ -85,5 +85,10 @@ namespace SwarmApi.Clients
                 Force = force
             });
         }
+
+        public async Task<IEnumerable<TaskResponse>> GetTasksAsync()
+        {
+            return await _client.Tasks.ListAsync();
+        }
     }
 }

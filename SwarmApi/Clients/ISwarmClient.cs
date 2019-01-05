@@ -18,5 +18,6 @@ namespace SwarmApi.Clients
         Task<string> InitCluster(SwarmInitParameters initParameters);
         Task<SwarmInspectResponse> GetSwarmInfo();
         Task LeaveCluster(bool force = false);
+        Task<IEnumerable<TaskResponse>> GetTasksAsync();
     }
 }

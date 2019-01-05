@@ -334,3 +334,6 @@ ASALocalRun/
 
 #Code covreage
 *.opencover.xml
+
+#docker-compose
+docker.compose.yml

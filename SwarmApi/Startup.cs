@@ -63,6 +63,7 @@ namespace SwarmApi
             services.AddScoped<ISecretService, SecretService>();
             services.AddScoped<IValidator<SecretParameters>, SecretValidator>();
             services.AddScoped<ISystemService, SystemService>();
+            services.AddScoped<ITaskService, TaskService>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
