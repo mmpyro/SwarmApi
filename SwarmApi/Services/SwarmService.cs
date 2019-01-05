@@ -2,12 +2,15 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using AutoMapper;
 using Docker.DotNet;
+using Docker.DotNet.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SwarmApi.Clients;
+using SwarmApi.Dtos;
 using SwarmApi.Extensions;
-using static SwarmApi.Constants;
+using SwarmApi.Validators;
 
 namespace SwarmApi.Services
 {
@@ -15,17 +18,18 @@ namespace SwarmApi.Services
     {
         Task<IActionResult> GetServicesAsync();
         Task<IActionResult> DeleteServicesAsync(string id);
+        Task<IActionResult> InitSwarmAsync(ClusterInitParameters clusterInit);
+        Task<IActionResult> InspectSwarmAsync();
+        Task<IActionResult> LeaveSwarmAsync(bool force = false);
     }
 
     public class SwarmService : Service, ISwarmService
     {
         private readonly ISwarmClient _swarmClient;
-        private readonly ILogger _logger;
 
-        public SwarmService(ISwarmClient swarmClient, ILoggerFactory loggerFactory)
+        public SwarmService(ISwarmClient swarmClient, ILoggerFactory loggerFactory) : base(loggerFactory)
         {
             _swarmClient = swarmClient;
-            _logger = loggerFactory.CreateLogger(ConsoleLogCategory);
         }
 
         public async Task<IActionResult> GetServicesAsync()
@@ -38,9 +42,7 @@ namespace SwarmApi.Services
             }
             catch(Exception ex)
             {
-                var errorMessage = "Cannot fetch information about services.";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerError(errorMessage);
+                return CreateErrorResponse(ex, "Cannot fetch information about services.");
             }
         }
 
@@ -68,9 +70,53 @@ namespace SwarmApi.Services
             }
             catch(Exception ex)
             {
-                var errorMessage = "Cannot delete service.";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerError(errorMessage);
+                return CreateErrorResponse(ex, "Cannot delete service.");
+            }
+        }
+
+        public async Task<IActionResult> InitSwarmAsync(ClusterInitParameters clusterInit)
+        {
+            try
+            {
+                var validator = new ClusterInitParameterValidator();
+                validator.Validate(clusterInit);
+                var parameters = Mapper.Map<SwarmInitParameters>(clusterInit);
+                var nodeId = await _swarmClient.InitCluster(parameters);
+                return Json(new {Id = nodeId});
+            }
+            catch(ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch(Exception ex)
+            {
+                return CreateErrorResponse(ex, "Cannot initialize swarm cluster.");
+            }
+        }
+
+        public async Task<IActionResult> InspectSwarmAsync()
+        {
+            try
+            {
+                var response = await _swarmClient.GetSwarmInfo();
+                return Json(response);
+            }
+            catch(Exception ex)
+            {
+                return CreateErrorResponse(ex, "Cannot fetch information about swarm status.");
+            }
+        }
+
+        public async Task<IActionResult> LeaveSwarmAsync(bool force = false)
+        {
+            try
+            {
+                await _swarmClient.LeaveCluster(force);
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return CreateErrorResponse(ex, "Cannot leave swarm cluster.");
             }
         }
     }

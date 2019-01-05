@@ -1,0 +1,5 @@
+version: '3'
+services:
+  worker:
+    image: alpine
+    command: ["/bin/sh", "-c", "while true;do echo 1;sleep 1s;done"]

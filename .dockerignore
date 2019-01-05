@@ -3,3 +3,4 @@ Dockerfile
 bin/**/*
 obj/**/*
 .vscode/**/*
+*.opencover.xml

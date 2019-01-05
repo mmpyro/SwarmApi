@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using SwarmApi.Clients;
+using SwarmApi.Controllers;
 using SwarmApi.Dtos;
 using SwarmApi.Services;
 using SwarmApi.Validators;
@@ -15,19 +16,16 @@ using Xunit;
 
 namespace WebApiSpec
 {
-    public class SecretServiceSpec
+    public class SecretControllerSpec
     {
         private readonly Fixture _any = new Fixture();
         private readonly ILoggerFactory _loggerFactory;
         private readonly ISwarmClient _swarmClient;
 
-        private readonly IValidator<SecretDto> _secretValidator;
-
-        public SecretServiceSpec()
+        public SecretControllerSpec()
         {
             _loggerFactory = Substitute.For<ILoggerFactory>();
             _swarmClient = Substitute.For<ISwarmClient>();
-            _secretValidator = new SecretValidator();
         }
 
         [Fact]
@@ -38,10 +36,11 @@ namespace WebApiSpec
                 return Task.FromResult<IEnumerable<Secret>>(new []{_any.Create<Secret>(), _any.Create<Secret>()});
                 
             });
-            var secretService = new SecretService(_swarmClient, _loggerFactory, _secretValidator);
+            var secretService = new SecretService(_swarmClient, _loggerFactory);
+            var secretController = new SecretController(secretService);
 
             //When
-            var response = await secretService.GetSecretsAsync();
+            var response = await secretController.GetSecrets();
             var jsonResult = response as JsonResult;
             var value = jsonResult?.Value as IEnumerable<Secret>;
 
@@ -64,10 +63,36 @@ namespace WebApiSpec
                  
                 });
             });
-            var secretService = new SecretService(_swarmClient, _loggerFactory, _secretValidator);
+            var secretService = new SecretService(_swarmClient, _loggerFactory);
+            var secretController = new SecretController(secretService);
 
             //When
-            var response = await secretService.GetSecretByNameAsync(secretName);
+            var response = await secretController.GetSecret(secretName);
+            var jsonResult = response as JsonResult;
+            var value = jsonResult?.Value as Secret;
+
+            //Then
+            Assert.NotNull(jsonResult);
+            Assert.NotNull(value);
+            Assert.Equal(200, jsonResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task ShouldReturnSingleSecretInfoWhenGetSecretByIdCalled()
+        {
+            //Given
+            const string id = "1234";
+            _swarmClient.GetSecrets().Returns(x => {
+                return Task.FromResult<IEnumerable<Secret>>(new []{_any.Create<Secret>(),
+                _any.Build<Secret>().With(t => t.ID, id).Create()
+                 
+                });
+            });
+            var secretService = new SecretService(_swarmClient, _loggerFactory);
+            var secretController = new SecretController(secretService);
+
+            //When
+            var response = await secretController.GetSecretById(id);
             var jsonResult = response as JsonResult;
             var value = jsonResult?.Value as Secret;
 
@@ -89,10 +114,11 @@ namespace WebApiSpec
                  
                 });
             });
-            var secretService = new SecretService(_swarmClient, _loggerFactory, _secretValidator);
+            var secretService = new SecretService(_swarmClient, _loggerFactory);
+            var secretController = new SecretController(secretService);
 
             //When
-            var response = await secretService.GetSecretByNameAsync("user-service");
+            var response = await secretController.GetSecret("user-service");
             var result = response as ContentResult;
 
             //Then
@@ -106,10 +132,11 @@ namespace WebApiSpec
             //Given
             const string secretName = "test-secret";
             _swarmClient.CreateSecret(Arg.Any<SecretSpec>()).Returns(x => _any.Create<SecretCreateResponse>());
-            var secretService = new SecretService(_swarmClient, _loggerFactory, _secretValidator);
+            var secretService = new SecretService(_swarmClient, _loggerFactory);
+            var secretController = new SecretController(secretService);
 
             //When
-            var response = await secretService.CreateSecretAsync(new SwarmApi.Dtos.SecretDto{
+            var response = await secretController.CreateSecret(new SwarmApi.Dtos.SecretParameters{
                 Content = _any.Create<string>(),
                 Name = secretName
             });
@@ -126,10 +153,11 @@ namespace WebApiSpec
             //Given
             const string secretName = "test-secret";
             _swarmClient.CreateSecret(Arg.Any<SecretSpec>()).Returns(x => _any.Create<SecretCreateResponse>());
-            var secretService = new SecretService(_swarmClient, _loggerFactory, _secretValidator);
+            var secretService = new SecretService(_swarmClient, _loggerFactory);
+            var secretController = new SecretController(secretService);
 
             //When
-            var response = await secretService.CreateSecretAsync(new SwarmApi.Dtos.SecretDto{
+            var response = await secretController.CreateSecret(new SwarmApi.Dtos.SecretParameters{
                 Content = string.Empty,
                 Name = secretName
             });
@@ -146,10 +174,11 @@ namespace WebApiSpec
         {
             //Given
             _swarmClient.CreateSecret(Arg.Any<SecretSpec>()).Returns(x => _any.Create<SecretCreateResponse>());
-            var secretService = new SecretService(_swarmClient, _loggerFactory, _secretValidator);
+            var secretService = new SecretService(_swarmClient, _loggerFactory);
+            var secretController = new SecretController(secretService);
 
             //When
-            var response = await secretService.CreateSecretAsync(new SwarmApi.Dtos.SecretDto{
+            var response = await secretController.CreateSecret(new SwarmApi.Dtos.SecretParameters{
                 Content = _any.Create<string>(),
                 Name = string.Empty
             });
@@ -166,10 +195,11 @@ namespace WebApiSpec
         {
             //Given
             _swarmClient.DeleteSecret(Arg.Any<string>()).Returns(x => Task.CompletedTask);
-            var secretService = new SecretService(_swarmClient, _loggerFactory, _secretValidator);
+            var secretService = new SecretService(_swarmClient, _loggerFactory);
+            var secretController = new SecretController(secretService);
 
             //When
-            var response = await secretService.DeleteSecretAsync(_any.Create<string>());
+            var response = await secretController.DeleteSecret(_any.Create<string>());
             var result = response as ContentResult;
 
             //Then
@@ -183,10 +213,11 @@ namespace WebApiSpec
         {
             //Given
             _swarmClient.DeleteSecret(Arg.Any<string>()).Returns(x => Task.CompletedTask);
-            var secretService = new SecretService(_swarmClient, _loggerFactory, _secretValidator);
+            var secretService = new SecretService(_swarmClient, _loggerFactory);
+            var secretController = new SecretController(secretService);
 
             //When
-            var response = await secretService.DeleteSecretAsync(string.Empty);
+            var response = await secretController.DeleteSecret(string.Empty);
             var result = response as ContentResult;
 
             //Then
@@ -201,10 +232,11 @@ namespace WebApiSpec
             _swarmClient.When(x => {
                 x.GetSecrets();
             }).Do(_ => { throw new Exception(); });
-            var secretService = new SecretService(_swarmClient, _loggerFactory, _secretValidator);
+            var secretService = new SecretService(_swarmClient, _loggerFactory);
+            var secretController = new SecretController(secretService);
 
             //When
-            var response = await secretService.GetSecretByNameAsync("");
+            var response = await secretController.GetSecret("");
             var result = response as ContentResult;
 
             //Then

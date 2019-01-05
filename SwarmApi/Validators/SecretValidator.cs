@@ -4,9 +4,9 @@ using SwarmApi.Extensions;
 
 namespace SwarmApi.Validators
 {
-    public class SecretValidator : IValidator<SecretDto>
+    public class SecretValidator : IValidator<SecretParameters>
     {
-        public void Validate(SecretDto value)
+        public void Validate(SecretParameters value)
         {
             if(value.Content.IsNullOrEmpty())
             {
