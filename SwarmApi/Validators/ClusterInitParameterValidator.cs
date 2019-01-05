@@ -16,7 +16,7 @@ namespace SwarmApi.Validators
         {
             if(string.IsNullOrEmpty(ip))
             {
-                throw new ArgumentException($"Parameter ${parameterName} is required.");
+                throw new ArgumentException($"Parameter {parameterName} is required.");
             }
 
             if (!IPAddress.TryParse(ip, out IPAddress address))
