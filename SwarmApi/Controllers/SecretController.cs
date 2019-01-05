@@ -36,7 +36,7 @@ namespace SwarmApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateSecret([FromBody] SecretDto secretDto)
+        public async Task<IActionResult> CreateSecret([FromBody] SecretParameters secretDto)
         {
             return await _secretService.CreateSecretAsync(secretDto);
         }

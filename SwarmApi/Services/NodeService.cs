@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SwarmApi.Clients;
 using System.Linq;
-using static SwarmApi.Constants;
 using SwarmApi.Filters;
 using SwarmApi.Extensions;
 using SwarmApi.Enums;
@@ -19,12 +18,10 @@ namespace SwarmApi.Services
     public class NodeService : Service, INodeService
     {
         private readonly ISwarmClient _swarmClient;
-        private readonly ILogger _logger;
 
-        public NodeService(ISwarmClient swarmClient, ILoggerFactory loggerFactory)
+        public NodeService(ISwarmClient swarmClient, ILoggerFactory loggerFactory) : base(loggerFactory)
         {
             _swarmClient = swarmClient;
-            _logger = loggerFactory.CreateLogger(ConsoleLogCategory);
         }
 
         public async Task<IActionResult> GetNodeAsync(NodeFilterParameters filterParameters)
@@ -45,9 +42,7 @@ namespace SwarmApi.Services
             }
             catch(Exception ex)
             {
-                var errorMessage = "Cannot fetch information about nodes.";
-                _logger.LogError(ex, errorMessage);
-                return InternalServerError(errorMessage);
+                return CreateErrorResponse(ex, "Cannot fetch information about nodes.");
             }
         }
 

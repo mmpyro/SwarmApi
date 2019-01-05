@@ -30,6 +30,7 @@ namespace SwarmApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            MapperSetup.Init();
             services.AddMvc();
             services.AddLogging(builder =>
             {
@@ -56,11 +57,12 @@ namespace SwarmApi
                 c.DescribeAllEnumsAsStrings();
             }); 
             services.Configure<SwarmConfiguration>(Configuration.GetSection("SwarmConfiguration"));
-            services.AddTransient<ISwarmClient, SwarmClient>();
-            services.AddTransient<INodeService, NodeService>();
-            services.AddTransient<ISwarmService, SwarmService>();
-            services.AddTransient<ISecretService, SecretService>();
-            services.AddTransient<IValidator<SecretDto>, SecretValidator>();
+            services.AddScoped<ISwarmClient, SwarmClient>();
+            services.AddScoped<INodeService, NodeService>();
+            services.AddScoped<ISwarmService, SwarmService>();
+            services.AddScoped<ISecretService, SecretService>();
+            services.AddScoped<IValidator<SecretParameters>, SecretValidator>();
+            services.AddScoped<ISystemService, SystemService>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

@@ -36,7 +36,7 @@ namespace WebApiSpec
                 
             });
             var swarmService = new SwarmApi.Services.SwarmService(_swarmClient, _loggerFactory);
-            var serviceController = new ServiceController(swarmService);
+            var serviceController = new SwarmController(swarmService);
 
             //When
             var response = await serviceController.GetService();
@@ -58,7 +58,7 @@ namespace WebApiSpec
                 x.GetServices();
             }).Do(_ => { throw new Exception(); });
             var swarmService = new SwarmApi.Services.SwarmService(_swarmClient, _loggerFactory);
-            var serviceController = new ServiceController(swarmService);
+            var serviceController = new SwarmController(swarmService);
 
             //When
             var response = await serviceController.GetService();
@@ -75,7 +75,7 @@ namespace WebApiSpec
             //Given
             const string id = "1234";
             var swarmService = new SwarmApi.Services.SwarmService(_swarmClient, _loggerFactory);
-            var serviceController = new ServiceController(swarmService);
+            var serviceController = new SwarmController(swarmService);
 
             //When
             var response = await serviceController.DeleteService(id);
@@ -91,7 +91,7 @@ namespace WebApiSpec
         {
             //Given
             var swarmService = new SwarmApi.Services.SwarmService(_swarmClient, _loggerFactory);
-            var serviceController = new ServiceController(swarmService);
+            var serviceController = new SwarmController(swarmService);
 
             //When
             var response = await serviceController.DeleteService(null);

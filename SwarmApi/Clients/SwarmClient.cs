@@ -9,16 +9,6 @@ using SwarmApi.Exceptions;
 
 namespace SwarmApi.Clients
 {
-    public interface ISwarmClient
-    {
-        Task<IEnumerable<NodeListResponse>> GetNodes();
-        Task<IEnumerable<SwarmService>> GetServices();
-        Task DeleteService(string id);
-        Task<IEnumerable<Secret>> GetSecrets();
-        Task<SecretCreateResponse> CreateSecret(SecretSpec body);
-        Task DeleteSecret(string id);
-    }
-
     public class SwarmClient : ISwarmClient
     {
         private readonly DockerClient _client;
@@ -66,6 +56,33 @@ namespace SwarmApi.Clients
         public async Task DeleteSecret(string id)
         {
             await _client.Secrets.DeleteAsync(id);
+        }
+
+        public async Task<VersionResponse> GetVersion()
+        {
+            return await _client.System.GetVersionAsync();
+        }
+
+        public async Task<SystemInfoResponse> GetSystemInfo()
+        {
+            return await _client.System.GetSystemInfoAsync();
+        }
+
+        public async Task<string> InitCluster(SwarmInitParameters initParameters)
+        {
+            return await _client.Swarm.InitSwarmAsync(initParameters);
+        }
+
+        public async Task<SwarmInspectResponse> GetSwarmInfo()
+        {
+            return await _client.Swarm.InspectSwarmAsync();
+        }
+
+        public async Task LeaveCluster(bool force = false)
+        {
+            await _client.Swarm.LeaveSwarmAsync(new SwarmLeaveParameters{
+                Force = force
+            });
         }
     }
 }
