@@ -17,14 +17,9 @@ pipeline {
                     sh "dotnet sonarscanner end /d:sonar.login=\"${SONAR_LOGIN}\""
                     nunit testResultsPattern: 'WebApiSpec/testReports/*.xml'
                     sh 'dotnet publish -c Release ./SwarmApi/SwarmApi.csproj -o ./out'
+                    archiveArtifacts artifacts: 'SwarmApi/out/*.*', fingerprint: true
                 }
             }
-        }
-    }
-
-    post {
-        always {
-            archiveArtifacts artifacts: 'SwarmApi/out/*.*', fingerprint: true
         }
     }
 }

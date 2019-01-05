@@ -45,12 +45,5 @@ namespace SwarmApi.Services
             result.StatusCode = 204;
             return result;
         }
-
-        protected IActionResult Ok()
-        {
-            var result = new ContentResult();
-            result.StatusCode = 200;
-            return result;
-        }
     }
 }
