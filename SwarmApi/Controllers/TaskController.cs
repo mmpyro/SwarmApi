@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Docker.DotNet.Models;
 using Microsoft.AspNetCore.Mvc;
 using SwarmApi.Services;
 
@@ -15,6 +17,8 @@ namespace SwarmApi.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<TaskResponse>), 200)]
+        [ProducesResponseType(500)]
         public async Task<IActionResult> GetTasks()
         {
             return await _taskService.GetTasksAsync();
