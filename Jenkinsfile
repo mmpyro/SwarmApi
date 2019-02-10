@@ -19,6 +19,10 @@ pipeline {
                     sh 'dotnet publish -c Release ./SwarmApi/SwarmApi.csproj -o ./out'
                     archiveArtifacts artifacts: 'SwarmApi/out/*.*', fingerprint: true
                 }
+                
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
     }

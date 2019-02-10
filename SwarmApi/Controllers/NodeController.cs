@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using SwarmApi.Services;
 using SwarmApi.Enums;
+using Docker.DotNet.Models;
+using System.Collections.Generic;
 
 namespace SwarmApi.Controllers
 {
@@ -19,6 +21,8 @@ namespace SwarmApi.Controllers
             this.nodeService = nodeService;
         }
 
+        [ProducesResponseType(typeof(IEnumerable<NodeListResponse>), 200)]
+        [ProducesResponseType(500)]
         [HttpGet]
         public async Task<IActionResult> GetNode([FromQuery] string hostname, [FromQuery] SwarmRole role)
         {

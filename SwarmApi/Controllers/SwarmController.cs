@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Docker.DotNet.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SwarmApi.Clients;
@@ -19,6 +21,8 @@ namespace SwarmApi.Controllers
 
         [Route("service")]
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<Docker.DotNet.Models.SwarmService>), 200)]
+        [ProducesResponseType(500)]
         public async Task<IActionResult> GetService()
         {
             return await _swarmService.GetServicesAsync();
@@ -26,6 +30,10 @@ namespace SwarmApi.Controllers
 
         [Route("service/{id}")]
         [HttpDelete]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         public async Task<IActionResult> DeleteService(string id)
         {
             return await _swarmService.DeleteServicesAsync(id);
@@ -33,6 +41,8 @@ namespace SwarmApi.Controllers
 
         [Route("init")]
         [HttpPost]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public async Task<IActionResult> InitCluster([FromBody] ClusterInitParameters clusterInitParameters)
         {
             return await _swarmService.InitSwarmAsync(clusterInitParameters);
@@ -40,6 +50,8 @@ namespace SwarmApi.Controllers
 
         [Route("inspect")]
         [HttpGet]
+        [ProducesResponseType(typeof(SwarmInspectResponse), 200)]
+        [ProducesResponseType(500)]
         public async Task<IActionResult> InspectCluster()
         {
             return await _swarmService.InspectSwarmAsync();
@@ -47,6 +59,8 @@ namespace SwarmApi.Controllers
 
         [Route("leave")]
         [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(500)]
         public async Task<IActionResult> LeaveCluster([FromQuery] bool force = false)
         {
             return await _swarmService.LeaveSwarmAsync(force);

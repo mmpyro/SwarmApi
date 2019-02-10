@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Docker.DotNet.Models;
 using Microsoft.AspNetCore.Mvc;
 using SwarmApi.Services;
 
@@ -16,6 +17,8 @@ namespace SwarmApi.Controllers
 
         [Route("version")]
         [HttpGet]
+        [ProducesResponseType(typeof(VersionResponse), 200)]
+        [ProducesResponseType(500)]
         public async Task<IActionResult> GetVersion()
         {
             return await _systemService.GetVersionAsync();
@@ -23,6 +26,8 @@ namespace SwarmApi.Controllers
 
         [Route("systeminfo")]
         [HttpGet]
+        [ProducesResponseType(typeof(SystemInfoResponse), 200)]
+        [ProducesResponseType(500)]
         public async Task<IActionResult> GetSystemInfo()
         {
             return await _systemService.GetSystemInfoAsync();

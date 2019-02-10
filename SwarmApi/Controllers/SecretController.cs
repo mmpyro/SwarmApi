@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Docker.DotNet.Models;
 using Microsoft.AspNetCore.Mvc;
 using SwarmApi.Dtos;
 using SwarmApi.Services;
@@ -16,6 +18,7 @@ namespace SwarmApi.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<Secret>), 200)]
         public async Task<IActionResult> GetSecrets()
         {
             return await _secretService.GetSecretsAsync();
@@ -23,6 +26,7 @@ namespace SwarmApi.Controllers
 
         [Route("{name}")]
         [HttpGet]
+        [ProducesResponseType(typeof(Secret), 200)]
         public async Task<IActionResult> GetSecret(string name)
         {
             return await _secretService.GetSecretByNameAsync(name);
@@ -30,12 +34,16 @@ namespace SwarmApi.Controllers
 
         [Route("id/{id}")]
         [HttpGet]
+        [ProducesResponseType(typeof(Secret), 200)]
         public async Task<IActionResult> GetSecretById(string id)
         {
             return await _secretService.GetSecretByIdAsync(id);
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(SecretCreateResponse), 201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public async Task<IActionResult> CreateSecret([FromBody] SecretParameters secretDto)
         {
             return await _secretService.CreateSecretAsync(secretDto);
@@ -43,6 +51,10 @@ namespace SwarmApi.Controllers
 
         [Route("{id}")]
         [HttpDelete]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         public async Task<IActionResult> DeleteSecret(string id)
         {
             return await _secretService.DeleteSecretAsync(id);

@@ -27,6 +27,7 @@ namespace SwarmApi
                     config.AddJsonFile(Path.Combine(cwd, $"appsettings.{environment}.json"), true);
                 })
                 .UseStartup<Startup>()
+                .UseUrls("http://0.0.0.0:5050")
                 .Build();
     }
 }
